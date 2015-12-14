@@ -31,41 +31,64 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Kill My Battery at once!"
-                    android:id="@+id/button" />
+                    android:id="@+id/btnKillBattery" />
 
                 <Button
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Stop!"
-                    android:id="@+id/button2" />
+                    android:text="Stop and Exit!"
+                    android:id="@+id/btnStop" />
 
             </LinearLayout>
 
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Flash"
-                android:id="@+id/cbFlash"
-                android:checked="false"
-                android:onClick="onCheckBoxClicked"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
 
-            <CheckBox
-                android:layout_width="wrap_content"
+            <HorizontalScrollView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Vibrate"
-                android:id="@+id/cbVibrate"
-                android:checked="false"
-                android:onClick="onCheckBoxClicked"/>
+                android:id="@+id/horizontalScrollView" >
 
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Full Brightness"
-                android:id="@+id/cbBrightness"
-                android:checked="false"
-                android:onClick="onCheckBoxClicked"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Flash"
+                        android:id="@+id/cbFlash"
+                        android:checked="false"
+                        />
+
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vibrate"
+                        android:id="@+id/cbVibrate"
+                        android:checked="false"
+                        />
+
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Full Brightness"
+                        android:id="@+id/cbBrightness"
+                        android:checked="false"
+                        />
+
+
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -78,7 +101,7 @@
                     android:text="Light Sensor"
                     android:id="@+id/cbLightSensor"
                     android:checked="false"
-                    android:onClick="onCheckBoxClicked"/>
+                    />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -101,7 +124,7 @@
                     android:text="Proximity Sensor"
                     android:id="@+id/cbProximity"
                     android:checked="false"
-                    android:onClick="onCheckBoxClicked" />
+                     />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -123,13 +146,35 @@
                     android:text="Accelerometer Sensor"
                     android:id="@+id/cbAccelerometer"
                     android:checked="false"
-                    android:onClick="onCheckBoxClicked" />
+                     />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:id="@+id/tvAccelerometer"
+                    android:layout_marginLeft="10dp"
+                    android:text="                       " />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GPS"
+                    android:id="@+id/cbGPS"
+                    android:checked="false"
+                     />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/tvGPSLocation"
                     android:layout_marginLeft="10dp"
                     android:text="                       " />
             </LinearLayout>
