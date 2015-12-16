@@ -1,8 +1,6 @@
 package computernetwork.assignment2.mobileheatup;
 
-import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -11,21 +9,27 @@ import android.hardware.SensorManager;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Iterator;
+import java.io.IOException;
 
 public class MainActivity extends ActionBarActivity implements CheckBox.OnCheckedChangeListener{
 
@@ -33,6 +37,33 @@ public class MainActivity extends ActionBarActivity implements CheckBox.OnChecke
     private SensorListener sensorListener;
     LocationManager locationManager;
     PowerManager.WakeLock wakeLock;
+    MediaPlayer mediaPlayer;
+    String videoUrl = "http://ge.tt/api/1/files/9Eog1lT2/0/blob?download"; //720p default
+
+
+    private Handler timeHandler = new Handler();
+    private Runnable timerCallback = new Runnable() {
+        private int i=1;
+        public void run() {
+            CheckBox cbWebPage = (CheckBox) findViewById(R.id.cbWebPage);
+            cbWebPage.setText("Load webpage every 10s (" + i + ")");
+            EditText editUrl = (EditText) findViewById(R.id.editWebAddress);
+            WebView webView = (WebView) findViewById(R.id.webView);
+            webView.getSettings().setJavaScriptEnabled(true);
+            class MyWebClient extends WebViewClient {
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    view.clearCache(true);
+                    view.loadUrl(url);
+                    return true;
+                }
+            };
+            webView.setWebViewClient(new MyWebClient());
+            webView.loadUrl(editUrl.getText().toString());
+            i++;
+            timeHandler.postDelayed(this, 200);
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +80,14 @@ public class MainActivity extends ActionBarActivity implements CheckBox.OnChecke
         ((CheckBox)findViewById(R.id.cbProximity)).setOnCheckedChangeListener(this);
         ((CheckBox)findViewById(R.id.cbAccelerometer)).setOnCheckedChangeListener(this);
         ((CheckBox)findViewById(R.id.cbGPS)).setOnCheckedChangeListener(this);
+        ((CheckBox)findViewById(R.id.cbCamera)).setOnCheckedChangeListener(this);
+        ((CheckBox)findViewById(R.id.cbYoutube)).setOnCheckedChangeListener(this);
+        ((CheckBox)findViewById(R.id.cbWebPage)).setOnCheckedChangeListener(this);
 
+
+        SurfaceView videoView = (SurfaceView) findViewById(R.id.videoView);
+        SurfaceHolder videoHolder = videoView.getHolder();
+        videoHolder.addCallback(new MediaPlayerCallback());
     }
 
     @Override
@@ -60,6 +98,8 @@ public class MainActivity extends ActionBarActivity implements CheckBox.OnChecke
         btnKillBattery.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((CheckBox)findViewById(R.id.cbCamera)).setChecked(true);
+                ((CheckBox)findViewById(R.id.cbYoutube)).setChecked(true);
                 ((CheckBox)findViewById(R.id.cbFlash)).setChecked(true);
                 ((CheckBox)findViewById(R.id.cbBrightness)).setChecked(true);
                 ((CheckBox)findViewById(R.id.cbVibrate)).setChecked(true);
@@ -67,6 +107,8 @@ public class MainActivity extends ActionBarActivity implements CheckBox.OnChecke
                 ((CheckBox)findViewById(R.id.cbProximity)).setChecked(true);
                 ((CheckBox)findViewById(R.id.cbAccelerometer)).setChecked(true);
                 ((CheckBox)findViewById(R.id.cbGPS)).setChecked(true);
+                ((CheckBox)findViewById(R.id.cbWebPage)).setChecked(true);
+
             }
         });
 
@@ -94,18 +136,19 @@ public class MainActivity extends ActionBarActivity implements CheckBox.OnChecke
 
             case R.id.cbFlash:
                 if (checked) {
-                    cam = Camera.open();
+                    if (!((CheckBox)findViewById(R.id.cbCamera)).isChecked())
+                        cam = Camera.open();
                     Camera.Parameters p = cam.getParameters();
                     p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                     cam.setParameters(p);
                     cam.startPreview();
                 }
                 else {
-                    if (cam == null)
-                        cam = Camera.open();
-
-                    cam.stopPreview();
-                    cam.release();
+                    if (!((CheckBox)findViewById(R.id.cbCamera)).isChecked()) {
+                        //cam = Camera.open();
+                        cam.stopPreview();
+                        cam.release();
+                    }
                 }
                 break;
 
@@ -126,7 +169,7 @@ public class MainActivity extends ActionBarActivity implements CheckBox.OnChecke
             case R.id.cbVibrate:
                 if (checked) {
                     vib = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
-                    long[] pattern = {0, 5000, 100};
+                    long[] pattern = {0, 5000};
                     vib.vibrate(pattern, 0);
                 }
                 else {
@@ -188,6 +231,81 @@ public class MainActivity extends ActionBarActivity implements CheckBox.OnChecke
                         ((CheckBox) v).setChecked(false);
                     }
                 }
+                break;
+
+            case R.id.cbCamera:
+                SurfaceView cameraView = (SurfaceView) findViewById(R.id.cameraView);
+                if (checked) {
+                    if (!((CheckBox)findViewById(R.id.cbFlash)).isChecked())
+                        cam = Camera.open();
+                    SurfaceHolder surfaceHolder = cameraView.getHolder();
+                    try {
+                        cam.setPreviewDisplay(surfaceHolder);
+                        cam.setDisplayOrientation(90);
+                        cam.startPreview();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    if (!((CheckBox)findViewById(R.id.cbFlash)).isChecked()) {
+                        cam.stopPreview();
+                        cam.release();
+                    } else {
+                        cam.stopPreview();
+                        try {
+                            cam.setPreviewDisplay(null);
+                            cam.startPreview();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+
+            case R.id.cbYoutube:
+                if (checked) {
+                    try {
+                        mediaPlayer.setDataSource(videoUrl);
+                        mediaPlayer.setOnPreparedListener(new MediaPlayerCallback());
+                        mediaPlayer.setOnCompletionListener(new MediaPlayerCallback());
+
+                        Toast.makeText(MainActivity.this, "Downloading video...", Toast.LENGTH_SHORT).show();
+                        mediaPlayer.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    mediaPlayer.stop();
+                    mediaPlayer.reset();
+                }
+                break;
+
+            case R.id.cbWebPage:
+                if (checked) {
+                    timeHandler.postDelayed(timerCallback, 100);
+                } else {
+                    timeHandler.removeCallbacks(timerCallback);
+                }
+                break;
+        }
+    }
+
+
+    public void onRadioClicked(View v) {
+        switch (v.getId()) {
+            case R.id.rb4k:
+                videoUrl = "http://ge.tt/api/1/files/9Phm2lT2/0/blob?download";
+                break;
+            case R.id.rb1080p:
+                videoUrl = "http://ge.tt/api/1/files/3rkD2lT2/0/blob?download";
+                break;
+            case R.id.rb720p:
+                videoUrl = "http://ge.tt/api/1/files/9Eog1lT2/0/blob?download";
+                break;
+            case R.id.rb480p:
+                videoUrl = "http://ge.tt/api/1/files/8Ad00lT2/0/blob?download";
+                break;
         }
     }
 
@@ -243,7 +361,6 @@ public class MainActivity extends ActionBarActivity implements CheckBox.OnChecke
     }
 
     private class LocationListener implements android.location.LocationListener {
-
         @Override
         public void onLocationChanged(Location location) {
             TextView tvGps = (TextView) findViewById(R.id.tvGPSLocation);
@@ -251,17 +368,36 @@ public class MainActivity extends ActionBarActivity implements CheckBox.OnChecke
         }
 
         @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
+        public void onStatusChanged(String provider, int status, Bundle extras) {}
+        public void onProviderEnabled(String provider) {}
+        public void onProviderDisabled(String provider) {}
+    }
 
+    private class MediaPlayerCallback implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, SurfaceHolder.Callback {
+
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            mediaPlayer.start();
         }
 
         @Override
-        public void onProviderEnabled(String provider) {
-
+        public void surfaceCreated(SurfaceHolder holder) {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDisplay(holder);
         }
 
         @Override
-        public void onProviderDisabled(String provider) {
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {}
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+         //   mediaPlayer.reset();
+            Toast.makeText(MainActivity.this, "Playback completed, restarting...", Toast.LENGTH_SHORT).show();
+            ((CheckBox) findViewById(R.id.cbYoutube)).setChecked(false);
+            ((CheckBox) findViewById(R.id.cbYoutube)).setChecked(true);
 
         }
     }

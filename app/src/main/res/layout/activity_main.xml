@@ -22,25 +22,24 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true">
 
-            <LinearLayout
-                android:orientation="horizontal"
+
+            <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:text="Kill My Battery at once!"
+                android:id="@+id/btnKillBattery"
+                android:textColor="#ff0000"
+                android:textStyle="bold" />
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Kill My Battery at once!"
-                    android:id="@+id/btnKillBattery" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stop and Exit!"
+                android:id="@+id/btnStop"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#2b812b"
+                android:textStyle="bold" />
 
-                <Button
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Stop and Exit!"
-                    android:id="@+id/btnStop" />
-
-            </LinearLayout>
 
             <Space
                 android:layout_width="match_parent"
@@ -178,6 +177,128 @@
                     android:layout_marginLeft="10dp"
                     android:text="                       " />
             </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/layoutCamera">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Camera"
+                        android:id="@+id/cbCamera"
+                        android:checked="false"
+                        />
+                </LinearLayout>
+
+                <SurfaceView
+                    android:layout_width="150dp"
+                    android:layout_height="200dp"
+                    android:id="@+id/cameraView" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Continuous Video Streaming"
+                    android:id="@+id/cbYoutube"
+                    android:checked="false"
+                    />
+
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+
+                        <RadioGroup
+                            android:orientation="horizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <RadioButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="4K"
+                                android:id="@+id/rb4k"
+                                android:onClick="onRadioClicked"/>
+                            <RadioButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="1080p"
+                                android:id="@+id/rb1080p"
+                                android:onClick="onRadioClicked"/>
+                            <RadioButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="720p"
+                                android:checked="true"
+                                android:id="@+id/rb720p"
+                                android:onClick="onRadioClicked"/>
+                            <RadioButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="480p"
+                                android:id="@+id/rb480p"
+                                android:onClick="onRadioClicked"/>
+
+                        </RadioGroup>
+
+                </HorizontalScrollView>
+
+                <SurfaceView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:id="@+id/videoView" />
+
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Load Web Page Continuously"
+                    android:id="@+id/cbWebPage"
+                    android:checked="false"
+                    />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="http://www.aalto.fi/en/"
+                    android:id="@+id/editWebAddress"/>
+                
+                <WebView
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:id="@+id/webView"></WebView>
+
+            </LinearLayout>
+
 
         </LinearLayout>
     </ScrollView>
